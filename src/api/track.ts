@@ -2,7 +2,6 @@ import {useStore} from '@/store';
 import request from '@/utils/request';
 import {mapTrackPlayableStatus} from "@/utils/common";
 
-const store = useStore()
 
 /**
  * 获取音乐 url
@@ -12,6 +11,7 @@ const store = useStore()
  */
 export function getMP3(id: string) {
     const getBr = () => {
+        const store = useStore()
         // 当返回的 quality >= 400000时，就会优先返回 hi-res
         const quality = store.settings?.musicQuality ?? '320000';
         return quality === 'flac' ? '350000' : quality;
