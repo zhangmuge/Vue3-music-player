@@ -13,9 +13,10 @@
           sub-text="copywriter"/>
     </div>
     <div class="index-row">
-      <div class="title"> For You </div>
+      <div class="title"> For You</div>
       <div class="for-you-row">
         <daily-tracks-card ref="DailyTracksCardRef"/>
+        <FMCard/>
       </div>
     </div>
   </div>
@@ -28,9 +29,11 @@ import {getRecommendPlayList} from "@/utils/playlist";
 import axios from "axios";
 import request from "@/utils/request";
 import DailyTracksCard from "@/components/DailyTracksCard.vue";
+import FMCard from "@/components/FMCard.vue";
+
 const recommendPlayList = ref([]);
 const show = ref(true);
-const DailyTracksCardRef=ref();
+const DailyTracksCardRef = ref();
 onBeforeMount(() => {
   getRecommendPlayList(10, false).then(res => recommendPlayList.value = res.data.result)
 })

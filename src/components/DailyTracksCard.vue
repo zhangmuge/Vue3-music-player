@@ -23,18 +23,31 @@
 import sample from 'lodash/sample';
 import {PlayOne} from "@icon-park/vue-next";
 import {computed, ref} from "vue";
-import {mapState} from "pinia";
+import {useStore} from "@/store";
+import {isAccountLoggedIn} from "@/utils/auth";
+import {dailyRecommendTracks} from "@/api/playlist";
 
+const store = useStore()
 const useAnimation = ref(false)
 const defaultCovers = [
   'https://p2.music.126.net/0-Ybpa8FrDfRgKYCTJD8Xg==/109951164796696795.jpg',
   'https://p2.music.126.net/QxJA2mr4hhb9DZyucIOIQw==/109951165422200291.jpg',
   'https://p1.music.126.net/AhYP9TET8l-VSGOpWAKZXw==/109951165134386387.jpg',
 ];
-
+const dailyTracks = store.dailyTracks
 const coverUrl = computed(() => {
-  return sample(defaultCovers)
+  return `${dailyTracks[0]?.al.picUrl || sample(defaultCovers)}?param=1024y1024`;
 })
+
+function loadDailyTracks() {
+  if (!isAccountLoggedIn())
+    return;
+  dailyRecommendTracks().then((result: any) => {
+    store.updateDailyTracks(result.data.dailySongs)
+  })
+}
+
+if (dailyTracks.length === 0) loadDailyTracks()
 </script>
 
 <style scoped lang="scss">

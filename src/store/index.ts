@@ -83,6 +83,9 @@ export const useStore = defineStore('store', {
                     )
                 }
             )
+        },
+        updateDailyTracks(dailyTracks: any) {
+            this.dailyTracks = dailyTracks
         }
     }
 })
