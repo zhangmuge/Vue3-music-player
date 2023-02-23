@@ -69,6 +69,7 @@ const imageStyles = computed(() => {
 const playButtonStyles = computed(() => {
   let styles: style = {height: "", width: ""}
   styles.width = props.playButtonSize + '%'
+  styles.height = props.playButtonSize + '%'
   return styles;
 })
 const shadowStyles = computed(() => {
@@ -131,10 +132,6 @@ img {
   cursor: default;
   transition: 0.2s;
 
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.28);
-  }
 
   &:active {
     transform: scale(0.94);

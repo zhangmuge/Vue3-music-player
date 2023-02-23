@@ -9,7 +9,8 @@ const baseURL = 'http://1.15.93.226:3000';
 const service = axios.create({
     baseURL,
     withCredentials: true,
-    timeout: 15000
+    timeout: 15000,
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
 });
 // service.interceptors.request.use((config) => {
 //     if (!config.params)

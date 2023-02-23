@@ -19,23 +19,73 @@
         <FMCard/>
       </div>
     </div>
+    <div class="index-row">
+      <div class="title">推荐艺人</div>
+      <CoverRow type="artist" :items="recommendArtists.items" :column-number="6"/>
+    </div>
+    <div class="index-row">
+      <div class="title">
+        新专速递
+        <router-link to="/new-album">查看更多</router-link>
+      </div>
+      <CoverRow type="album" :items="newReleasesAlbum.item" sub-text="artist"/>
+    </div>
+    <div class="index-row">
+      <div class="title">
+        排行榜
+        <router-link to="/explore?category=排行榜">查看更多</router-link>
+      </div>
+      <CoverRow type="playlist" :items="topList.items" sub-text="updateFrequency"/>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import CoverRow from "../components/CoverRow.vue";
-import {onBeforeMount, ref} from "vue";
+import {getCurrentInstance, onBeforeMount, ref} from "vue";
 import {getRecommendPlayList} from "@/utils/playlist";
 import axios from "axios";
 import request from "@/utils/request";
 import DailyTracksCard from "@/components/DailyTracksCard.vue";
 import FMCard from "@/components/FMCard.vue";
+import {toplistOfArtists} from "@/api/artists";
+import {toplists} from "@/api/playlist";
+import {newAlbums} from "@/api/album";
 
+const newReleasesAlbum = ref<{ item: any[] }>({item: []})
 const recommendPlayList = ref([]);
 const show = ref(true);
+const recommendArtists = ref<{ items: any[], indexs: any[] }>({items: [], indexs: []})
 const DailyTracksCardRef = ref();
+const topList = ref<{ items: any[], ids: any[] }>({items: [], ids: [19723756, 180106, 60198, 3812895, 60131]})
 onBeforeMount(() => {
   getRecommendPlayList(10, false).then(res => recommendPlayList.value = res.data.result)
+  toplistOfArtists().then((res: any) => {
+    const data = res.data
+    let indexs: any[] = [];
+    while (indexs.length < 6) {
+      let tmp = ~~(Math.random() * 100);
+      if (!indexs.includes(tmp)) indexs.push(tmp);
+    }
+    recommendArtists.value.indexs = indexs;
+    recommendArtists.value.items = data.list.artists.filter((l: any, index: any) =>
+        indexs.includes(index)
+    );
+  })
+  toplists().then((res: any) => {
+    const data = res.data
+    console.log(data)
+    topList.value.items = data.list.filter((l: any) =>
+      topList.value.ids.includes(l.id)
+    )
+  })
+  newAlbums({
+    area: "ALL",
+    limit: 10
+  }).then(((res: any) => {
+    newReleasesAlbum.value.item = res.data.albums
+  }))
+
 })
 </script>
 

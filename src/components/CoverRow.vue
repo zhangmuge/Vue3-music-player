@@ -21,9 +21,10 @@
           </span>
         </div>
         <div class="title" :style="{ fontSize: subTextFontSize }">
-          <span v-if="isExplicit(item)" class="explicit-symbol"
-          ><ExplicitSymbol
-          /></span>
+          <span v-if="isExplicit(item)" class="explicit-symbol"></span>
+          <!--          ><ExplicitSymbol-->
+          <!--          /></span>-->
+
           <span v-if="isPrivacy(item)" class="lock-icon">
             <el-icon class="lock-icon"><lock size="12"/></el-icon></span>
           <router-link :to="getTitleLink(item)">{{ item.name }}</router-link>
