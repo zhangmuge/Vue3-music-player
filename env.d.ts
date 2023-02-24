@@ -17,3 +17,11 @@ declare module 'vue-router' {
 declare module 'js-cookie'
 declare module 'node:process'
 declare module 'nprogress'
+import 'vue-router'
+
+declare module 'vue-router' {
+    interface RouteMeta {
+        keepAlive?: boolean
+        savePosition?: boolean
+    }
+}

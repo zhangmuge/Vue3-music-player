@@ -42,24 +42,31 @@
 
 <script lang="ts" setup>
 import CoverRow from "../components/CoverRow.vue";
-import {getCurrentInstance, onBeforeMount, ref} from "vue";
+import {onActivated, onBeforeMount, ref} from "vue";
 import {getRecommendPlayList} from "@/utils/playlist";
-import axios from "axios";
-import request from "@/utils/request";
 import DailyTracksCard from "@/components/DailyTracksCard.vue";
 import FMCard from "@/components/FMCard.vue";
 import {toplistOfArtists} from "@/api/artists";
 import {toplists} from "@/api/playlist";
 import {newAlbums} from "@/api/album";
+//@ts-ignore
+import NProgress from 'nprogress'
 
 const newReleasesAlbum = ref<{ item: any[] }>({item: []})
 const recommendPlayList = ref([]);
-const show = ref(true);
+const show = ref(false);
 const recommendArtists = ref<{ items: any[], indexs: any[] }>({items: [], indexs: []})
 const DailyTracksCardRef = ref();
 const topList = ref<{ items: any[], ids: any[] }>({items: [], ids: [19723756, 180106, 60198, 3812895, 60131]})
-onBeforeMount(() => {
-  getRecommendPlayList(10, false).then(res => recommendPlayList.value = res.data.result)
+onActivated(() => {
+  setTimeout(() => {
+    if (!show.value) NProgress.start()
+  }, 1000);
+  getRecommendPlayList(10, false).then(res => {
+    recommendPlayList.value = res.data.result
+    NProgress.done()
+    show.value = true
+  })
   toplistOfArtists().then((res: any) => {
     const data = res.data
     let indexs: any[] = [];
@@ -74,9 +81,8 @@ onBeforeMount(() => {
   })
   toplists().then((res: any) => {
     const data = res.data
-    console.log(data)
     topList.value.items = data.list.filter((l: any) =>
-      topList.value.ids.includes(l.id)
+        topList.value.ids.includes(l.id)
     )
   })
   newAlbums({
@@ -85,8 +91,8 @@ onBeforeMount(() => {
   }).then(((res: any) => {
     newReleasesAlbum.value.item = res.data.albums
   }))
-
 })
+
 </script>
 
 <style scoped lang="scss">

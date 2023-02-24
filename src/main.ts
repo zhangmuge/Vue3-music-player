@@ -1,4 +1,4 @@
-import { createApp } from 'vue'
+import {createApp} from 'vue'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import {createPinia} from "pinia";
@@ -9,17 +9,20 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import 'element-plus/theme-chalk/dark/css-vars.css'
 import '@icon-park/vue-next/styles/index.css';
 import 'nprogress/nprogress.css'
+import {storePlugins} from '@/store/plugins/localStorage'
 // @ts-ignore
 import NProgress from 'nprogress'
+
 const app = createApp(App)
-const pinia=createPinia();
+const pinia = createPinia();
+pinia.use(storePlugins)
 app.use(pinia)
 app.use(ElementPlus)
 app.use(router)
 
 app.mount('#app')
-NProgress.configure({ showSpinner: false, trickleSpeed: 100 });
+NProgress.configure({showSpinner: false, trickleSpeed: 100});
 // @ts-ignore
-for(const [key,component] of Object.entries(ElementPlusIconsVue)){
-    app.component(key,component)
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+    app.component(key, component)
 }

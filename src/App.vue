@@ -7,7 +7,7 @@ import Home from "@/views/home.vue";
 
 let userSelectNone = ref<boolean>(false);
 let showLyrics = ref(false)//标记
-const route=useRoute();
+const route = useRoute();
 </script>
 
 <template>
@@ -16,18 +16,17 @@ const route=useRoute();
     <Scrollbar v-show="!showLyrics" ref="scrollbar"/>
     <Navbar/>
     <main ref="main">
-<!--      <keep-alive>-->
-<!--        <router-view v-if="route.meta.keepAlive"></router-view>-->
-<!--      </keep-alive>-->
-<!--      <router-view v-if="route.meta.keepAlive"></router-view>-->
-      <home></home>
+      <keep-alive>
+        <router-view v-if="route.meta.keepAlive"></router-view>
+      </keep-alive>
+      <router-view v-if="!route.meta.keepAlive"></router-view>
     </main>
   </div>
 
 </template>
 
 <style scoped lang="scss">
-main{
+main {
   position: fixed;
   top: 0;
   bottom: 0;
@@ -37,6 +36,7 @@ main{
   padding: 64px 10vw 96px 10vw;
   box-sizing: border-box;
 }
+
 @media (max-width: 1336px) {
   main {
     padding: 64px 5vw 96px 5vw;

@@ -1,4 +1,5 @@
 import initLocalStorage from './initLocalStorage';
+import updateApp from "@/utils/updateApp";
 
 
 if (localStorage.getItem('appVersion') === null) {
@@ -7,7 +8,7 @@ if (localStorage.getItem('appVersion') === null) {
     localStorage.setItem('appVersion', '1.0.0');
 }
 
-
+updateApp()
 export default {
     showLyrics: false,
     enableScrolling: true,
