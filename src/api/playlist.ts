@@ -83,7 +83,7 @@ export function getPlaylistDetail(id: number) {
  * @param {number} params.before
  */
 export function highQualityPlaylist(params: {
-    cat: string,
+    cat?: string,
     limit?: number,
     before: number
 }) {
@@ -106,9 +106,10 @@ export function highQualityPlaylist(params: {
  * @param {number=} params.limit
  */
 export function topPlaylist(params: {
-    order: string,
+    order: string
     cat: string,
-    limit?: number
+    limit?: number,
+    offset?: number
 }) {
     return request({
         url: '/top/playlist',

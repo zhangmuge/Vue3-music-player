@@ -2,12 +2,9 @@
 import {ref} from "vue";
 import Scrollbar from "@/components/Scrollbar.vue";
 import Navbar from "@/components/Navbar.vue";
-import {useRoute} from "vue-router";
-import Home from "@/views/home.vue";
 
 let userSelectNone = ref<boolean>(false);
 let showLyrics = ref(false)//标记
-const route = useRoute();
 </script>
 
 <template>
@@ -16,10 +13,11 @@ const route = useRoute();
     <Scrollbar v-show="!showLyrics" ref="scrollbar"/>
     <Navbar/>
     <main ref="main">
-      <keep-alive>
-        <router-view v-if="route.meta.keepAlive"></router-view>
-      </keep-alive>
-      <router-view v-if="!route.meta.keepAlive"></router-view>
+      <router-view v-slot="{Component}">
+        <keep-alive>
+          <component :is="Component" :key="$route.fullPath"/>
+        </keep-alive>
+      </router-view>
     </main>
   </div>
 

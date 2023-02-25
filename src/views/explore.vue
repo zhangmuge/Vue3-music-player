@@ -30,34 +30,125 @@
         </div>
       </div>
     </div>
+    <div class="playlists">
+      <CoverRow type="playlist" :items="playlists" :sub-text="subText"
+                :show-play-count="activeCategory!=='排行榜'"
+                :show-play-button="true"
+                :image-size="activeCategory!=='排行榜'?512:1024"/>
+    </div>
+    <div v-show="['推荐歌单','排行榜'].includes(activeCategory)===false"
+         class="load-more">
+      <ButtonTwoTone
+          v-show="showLoadMoreButton &&hasMore"
+          color="grey"
+          :loading="loadingMore"
+          @click="getPlaylist">加载更多
+      </ButtonTwoTone>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import {useStore} from "@/store";
 import {More} from "@icon-park/vue-next";
-import {computed, ref} from "vue";
+import {computed, onActivated, ref} from "vue";
 import {playlistCategories} from "@/utils/staticData";
+import CoverRow from "@/components/CoverRow.vue";
+//@ts-ignore
+import NProcess from 'nprogress'
+import {useRoute} from "vue-router";
+import {getRecommendPlayList} from "@/utils/playlist";
+import {highQualityPlaylist, toplists, topPlaylist} from "@/api/playlist";
+import ButtonTwoTone from "@/components/ButtonTwoTone.vue";
 
 const store = useStore()
 const settings = computed(() => store.settings)
 
 const show = ref(false)
-const playlists = ref([])
+const playlists = ref<any[]>([])
 const activeCategory = ref('全部')
 const loadingMore = ref(false)
 const allBigCats = ref(['语种', '风格', '场景', '情感', '主题'])
 const showCatOptions = ref(false)
 const hasMore = ref(true)
 const showLoadMoreButton = ref(false)
-
+const route = useRoute()
 const loadData = () => {
-
+  setTimeout(() => {
+    if (!show.value)
+      NProcess.start()
+  }, 1000);
+  activeCategory.value = route.query.category === null || undefined ? '全部' : route.query.category as string
+  getPlaylist();
 }
+const getPlaylist = () => {
+  loadingMore.value = true
+  if (activeCategory.value === '推荐歌单') {
+    return getRecomPlayList()
+  }
+  if (activeCategory.value === '精品歌单') {
+    return getHighQualityPlaylist();
+  }
+  if (activeCategory.value === '排行榜') {
+    return getTopLists();
+  }
+  return getTopPlayList();
+}
+
+const getHighQualityPlaylist = () => {
+  let playlist = playlists;
+  let before =
+      playlist.value.length !== 0 ? playlist.value[playlist.value.length - 1].updateTime : 0;
+  highQualityPlaylist({limit: 50, before}).then(data => {
+    const res = data.data
+    updatePlaylist(res.playlists);
+    hasMore.value = res.more;
+  });
+}
+const getTopLists = () => {
+  toplists().then(data => {
+    const res = data.data
+    playlists.value = [];
+    updatePlaylist(res.list);
+  });
+}
+const getTopPlayList = () => {
+  topPlaylist({
+    order: 'hot',
+    cat: activeCategory.value,
+    offset: playlists.value.length,
+  }).then(data => {
+    updatePlaylist(data.data.playlists);
+    hasMore.value = data.data.more;
+  });
+}
+const getRecomPlayList = () => {
+  getRecommendPlayList(100, true).then((res: any) => {
+    playlists.value = []
+    updatePlaylist(res.data)
+  })
+}
+const updatePlaylist = (playlist: []) => {
+  playlists.value.push(...playlist)
+  loadingMore.value = false
+  showLoadMoreButton.value = true
+  NProcess.done()
+  show.value = true
+}
+const subText = computed(() => {
+  if (activeCategory.value === '排行榜')
+    return 'updateFrequency'
+  if (activeCategory.value === '推荐歌单')
+    return 'copywriter'
+  return 'none';
+})
 
 const getCatsByBigCat = (name: string) => {
   return playlistCategories.filter((c: any) => c.bigCat === name)
 }
+onActivated(() => {
+  loadData()
+})
 </script>
 
 <style scoped lang="scss">
@@ -160,5 +251,10 @@ h1 {
   .cat.active {
     color: var(--color-primary);
   }
+}
+.load-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
 }
 </style>

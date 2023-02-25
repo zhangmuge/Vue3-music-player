@@ -15,9 +15,10 @@
       <div class="text">
         <div v-if="showPlayCount" class="info">
           <span class="play-count"
-          ><el-icon><play/></el-icon>{{
-              filter(item.playCount)
-            }}
+          ><play-one theme="filled"/>
+            <span class="num">{{
+                formatPlayCount(item.playCount)
+              }}</span>
           </span>
         </div>
         <div class="title" :style="{ fontSize: subTextFontSize }">
@@ -40,7 +41,7 @@
 <script setup lang="ts">
 
 import {computed} from "vue";
-import {Play, Lock} from "@icon-park/vue-next";
+import {PlayOne, Lock} from "@icon-park/vue-next";
 import Cover from "@/components/Cover.vue";
 
 const props = defineProps({
@@ -103,6 +104,19 @@ const getImageUrl = (item: any) => {
   }
   let img = item.img1v1Url || item.picUrl || item.coverImgUrl;
   return `${img?.replace('http://', 'https://')}?param=512y512`;
+}
+const formatPlayCount = (count: number) => {
+  if (!count) return '';
+  if (count > 100000000) {
+    return `${Math.floor((count / 100000000) * 100) / 100}亿`; // 2.32 亿
+  }
+  if (count > 100000) {
+    return `${Math.floor((count / 10000) * 10) / 10}万`; // 232.1 万
+  }
+  if (count > 10000) {
+    return `${Math.floor((count / 10000) * 100) / 100}万`; // 2.3 万
+  }
+  return count;
 }
 </script>
 
@@ -182,12 +196,12 @@ const getImageUrl = (item: any) => {
   font-weight: 600;
   opacity: 0.58;
   color: var(--color-text);
-  font-size: 12px;
+  font-size: 14px;
+  line-height: 10px;
 
-  .el-icon {
-    margin-right: 3px;
-    height: 8px;
-    width: 8px;
+  .i-icon {
+    margin-right: 5px;
   }
+
 }
 </style>
