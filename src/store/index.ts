@@ -86,6 +86,17 @@ export const useStore = defineStore('store', {
         },
         updateDailyTracks(dailyTracks: any) {
             this.dailyTracks = dailyTracks
-        }
+        },
+        togglePlaylistCategory(name: string) {
+            const index = this.settings.enabledPlaylistCategories.findIndex(
+                (c: any) => c === name
+            );
+            if (index !== -1) {
+                this.settings.enabledPlaylistCategories =
+                    this.settings.enabledPlaylistCategories.filter((c: any) => c !== name);
+            } else {
+                this.settings.enabledPlaylistCategories.push(name);
+            }
+        },
     }
 })

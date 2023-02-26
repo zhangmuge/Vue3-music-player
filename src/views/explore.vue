@@ -56,11 +56,11 @@ import {playlistCategories} from "@/utils/staticData";
 import CoverRow from "@/components/CoverRow.vue";
 //@ts-ignore
 import NProcess from 'nprogress'
-import {useRoute} from "vue-router";
+import {onBeforeRouteUpdate, useRoute, useRouter} from "vue-router";
 import {getRecommendPlayList} from "@/utils/playlist";
 import {highQualityPlaylist, toplists, topPlaylist} from "@/api/playlist";
 import ButtonTwoTone from "@/components/ButtonTwoTone.vue";
-
+import router from "@/router";
 const store = useStore()
 const settings = computed(() => store.settings)
 
@@ -142,12 +142,27 @@ const subText = computed(() => {
     return 'copywriter'
   return 'none';
 })
-
+const goToCategory = (Category: string) => {
+  showCatOptions.value = false
+  router.push({name: 'explore', query: {category: Category}}).catch(err => {
+  })
+}
 const getCatsByBigCat = (name: string) => {
   return playlistCategories.filter((c: any) => c.bigCat === name)
 }
+const toggleCat = (name: string) => {
+  store.togglePlaylistCategory(name);
+}
 onActivated(() => {
   loadData()
+})
+onBeforeRouteUpdate((to, from, next) => {
+  showLoadMoreButton.value = false
+  hasMore.value = true
+  playlists.value = []
+  activeCategory.value = to.query.category as string
+  getPlaylist()
+  next()
 })
 </script>
 
@@ -252,6 +267,7 @@ h1 {
     color: var(--color-primary);
   }
 }
+
 .load-more {
   display: flex;
   justify-content: center;
