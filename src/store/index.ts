@@ -98,5 +98,34 @@ export const useStore = defineStore('store', {
                 this.settings.enabledPlaylistCategories.push(name);
             }
         },
+        updateData(key: any, value: any) {
+            this.data[key] = value
+        },
+        async fetchUserProfile() {
+            if (!isAccountLoggedIn())
+                return;
+            return userAccount().then(res => {
+                const data = res.data
+                if (data.code === 200)
+                    this.updateData('user', data.profile)
+            })
+        },
+        async fetchLikedPlaylist() {
+            if (!isLooseLoggedIn()) return;
+            if (isAccountLoggedIn()) {
+                return userPlaylist({
+                    uid: this.data.user?.userId,
+                    limit: 2000, // 最多只加载2000个歌单（等有用户反馈问题再修）
+                    timestamp: new Date().getTime(),
+                }).then(result => {
+                    const data = result.data
+                    if (data.playlist) {
+                        this.updateLikedXXX('playlists', data.playlist)
+                        this.updateData('likedSongPlaylistID', data.playlist[0].id)
+                        // 更新用户”喜欢的歌曲“歌单ID
+                    }
+                });
+            }
+        }
     }
 })

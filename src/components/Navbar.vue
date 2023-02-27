@@ -31,7 +31,13 @@
             <el-avatar :src="avatarUrl" ref="avatar" shape="circle" :size="35"/>
           </template>
           <template #default>
-            <el-button class="menu-button">
+            <el-button class="menu-button" v-if="isLooseLoggedIn" @click="toLogin()">
+              <el-icon>
+                <login/>
+              </el-icon>
+              登录
+            </el-button>
+            <el-button class="menu-button" v-if="!isLooseLoggedIn">
               <el-icon>
                 <logout/>
               </el-icon>
@@ -54,18 +60,23 @@
 
 <script lang="ts" setup>
 import {ArrowLeftBold, ArrowRightBold} from '@element-plus/icons-vue'
-import {useRoute, useRouter} from "vue-router";
-import {GithubOne, Logout, Search} from "@icon-park/vue-next";
+import {useRoute} from "vue-router";
+import {GithubOne, Logout, Search, Login} from "@icon-park/vue-next";
 import {computed, ref, unref} from "vue";
-import ContextMenu from "@/components/ContextMenu.vue";
+import router from '@/router/index'
+import {isLooseLoggedIn} from "@/utils/auth";
 
 const route = useRoute();
 const inputFocus = ref(false);
 const keywords = ref<string>('');
-const router = useRouter();
-
+const toLogin = () => {
+  router.push({name: 'loginAccount'})
+}
 const avatarUrl = computed(() => {
   return 'http://s4.music.126.net/style/web2/img/default/default_avatar.jpg?param=60y60'
+})
+const isLoggedIn = computed(() => {
+  return isLooseLoggedIn()
 })
 const avatar = ref();
 const doSearch = () => {
@@ -85,7 +96,7 @@ const doSearch = () => {
 <style scoped lang="scss">
 .popover {
   visibility: hidden;
-  --el-popover-border-radius:20px;
+  --el-popover-border-radius: 20px;
   --el-popper-border-radius: 20px;
   box-shadow: 0 6px 12px -4px rgba(0, 0, 0, 0.08);
   //border: 4px solid rgba(0, 0, 0, 0.06);

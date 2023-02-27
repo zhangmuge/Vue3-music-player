@@ -6,7 +6,7 @@ import request from '@/utils/request';
  * - uid : 用户 id
  * @param {number} uid
  */
-export function userDetail(uid:number) {
+export function userDetail(uid: number) {
     return request({
         url: '/user/detail',
         method: 'get',
@@ -42,12 +42,14 @@ export function userAccount() {
  * @param {number} params.limit
  * @param {number=} params.offset
  */
-interface userPlaylistParams{
-    uid:number,
-    limit:number,
-    offset?:number
+interface userPlaylistParams {
+    uid: number,
+    limit: number,
+    offset?: number,
+    timestamp?: number
 }
-export function userPlaylist(params:userPlaylistParams) {
+
+export function userPlaylist(params: userPlaylistParams) {
     return request({
         url: '/user/playlist',
         method: 'get',
@@ -64,11 +66,12 @@ export function userPlaylist(params:userPlaylistParams) {
  * @param {number} params.uid
  * @param {number} params.type
  */
-interface userPlayHistoryParams{
-    uid:number,
-    type:number
+interface userPlayHistoryParams {
+    uid: number,
+    type: number
 }
-export function userPlayHistory(params:userPlayHistoryParams) {
+
+export function userPlayHistory(params: userPlayHistoryParams) {
     return request({
         url: '/user/record',
         method: 'get',
@@ -82,7 +85,7 @@ export function userPlayHistory(params:userPlayHistoryParams) {
  * - uid: 用户 id
  * @param {number} uid
  */
-export function userLikedSongsIDs(uid:number) {
+export function userLikedSongsIDs(uid: number) {
     return request({
         url: '/likelist',
         method: 'get',
@@ -119,11 +122,12 @@ export function dailySignin(type = 0) {
  * @param {number} params.limit
  * @param {number=} params.offset
  */
-interface likedAlbumsParams{
-    limit:number,
-    offset?:number
+interface likedAlbumsParams {
+    limit: number,
+    offset?: number
 }
-export function likedAlbums(params:likedAlbumsParams) {
+
+export function likedAlbums(params: likedAlbumsParams) {
     return request({
         url: '/album/sublist',
         method: 'get',
@@ -138,10 +142,11 @@ export function likedAlbums(params:likedAlbumsParams) {
  * 获取收藏的歌手（需要登录）
  * 说明 : 调用此接口可获取到用户收藏的歌手
  */
-interface likedArtistsParams{
-    limit:number
+interface likedArtistsParams {
+    limit: number
 }
-export function likedArtists(params:likedArtistsParams) {
+
+export function likedArtists(params: likedArtistsParams) {
     return request({
         url: '/artist/sublist',
         method: 'get',
@@ -156,7 +161,7 @@ export function likedArtists(params:likedArtistsParams) {
  * 获取收藏的MV（需要登录）
  * 说明 : 调用此接口可获取到用户收藏的MV
  */
-export function likedMVs(params:likedArtistsParams) {
+export function likedMVs(params: likedArtistsParams) {
     return request({
         url: '/mv/sublist',
         method: 'get',
@@ -170,7 +175,7 @@ export function likedMVs(params:likedArtistsParams) {
 /**
  * 上传歌曲到云盘（需要登录）
  */
-export function uploadSong(file:string) {
+export function uploadSong(file: string) {
     const formData = new FormData();
     formData.append('songFile', file);
     return request({
@@ -198,12 +203,13 @@ export function uploadSong(file:string) {
  * @param {number} params.limit
  * @param {number=} params.offset
  */
-interface cloudDisk{
-    limit?:number,
-    offset?:number,
-    timestamp?:number
+interface cloudDisk {
+    limit?: number,
+    offset?: number,
+    timestamp?: number
 }
-export function cloudDisk(params:cloudDisk = {}) {
+
+export function cloudDisk(params: cloudDisk = {}) {
     params.timestamp = new Date().getTime();
     return request({
         url: '/user/cloud',
@@ -215,7 +221,7 @@ export function cloudDisk(params:cloudDisk = {}) {
 /**
  * 获取云盘歌曲详情（需要登录）
  */
-export function cloudDiskTrackDetail(id:number) {
+export function cloudDiskTrackDetail(id: number) {
     return request({
         url: '/user/cloud/detail',
         method: 'get',
@@ -230,7 +236,7 @@ export function cloudDiskTrackDetail(id:number) {
  * 删除云盘歌曲（需要登录）
  * @param {Array} id
  */
-export function cloudDiskTrackDelete(id:number) {
+export function cloudDiskTrackDelete(id: number) {
     return request({
         url: '/user/cloud/del',
         method: 'get',
