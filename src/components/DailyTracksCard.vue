@@ -1,5 +1,5 @@
 <template>
-  <div class="daily-recommend-card" @click="goToDailyTracks">
+  <div class="daily-recommend-card" @click="">
     <img :src="coverUrl" loading="lazy"/>
     <div class="container">
       <div class="title-box">
@@ -11,7 +11,7 @@
         </div>
       </div>
     </div>
-    <button class="play-button" @click.stop="playDailyTracks">
+    <button class="play-button" @click.stop="">
       <el-icon size="24">
         <play-one/>
       </el-icon>

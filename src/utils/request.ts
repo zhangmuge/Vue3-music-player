@@ -12,28 +12,28 @@ const service = axios.create({
     timeout: 15000,
     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
 });
-// service.interceptors.request.use((config) => {
-//     if (!config.params)
-//         config.params = {};
-//     if (baseURL.length) {
-//         if (baseURL[0] !== '/') {
-//             config.params.cookie = `MUSIC_U=${getCookie('MUSIC_U')};`;
-//         }
-//     } else {
-//         console.error("You must set up the baseURL in the service's config");
-//     }
-//     if (!config.url?.includes('/login')) {
-//         config.params.realIP = '211.161.244.70'
-//     }
-//     if (process.env.VUE_APP_REAL_IP) {
-//         config.params.realIP = process.env.VUE_APP_REAL_IP;
-//     }
-//     const proxy = JSON.parse(<string>localStorage.getItem('settings')).proxyConfig;
-//     if (['HTTP', 'HTTPS'].includes(proxy.protocol)) {
-//         config.params.proxy = `${proxy.protocol}://${proxy.server}:${proxy.port}`;
-//     }
-//     return config;
-// })
+service.interceptors.request.use((config) => {
+    if (!config.params)
+        config.params = {};
+    if (baseURL.length) {
+        if (baseURL[0] !== '/') {
+            config.params.cookie = `MUSIC_U=${getCookie('MUSIC_U')};`;
+        }
+    } else {
+        console.error("You must set up the baseURL in the service's config");
+    }
+    if (!config.url?.includes('/login')) {
+        config.params.realIP = '211.161.244.70'
+    }
+    // if (process.env.VUE_APP_REAL_IP) {
+    //     config.params.realIP = process.env.VUE_APP_REAL_IP;
+    // }
+    // const proxy = JSON.parse(<string>localStorage.getItem('settings')).proxyConfig;
+    // if (['HTTP', 'HTTPS'].includes(proxy.protocol)) {
+    //     config.params.proxy = `${proxy.protocol}://${proxy.server}:${proxy.port}`;
+    // }
+    return config;
+})
 // service.interceptors.response.use(
 //     (response) => {
 //         const res = response.data

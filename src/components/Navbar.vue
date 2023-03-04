@@ -31,13 +31,14 @@
             <el-avatar :src="avatarUrl" ref="avatar" shape="circle" :size="35"/>
           </template>
           <template #default>
-            <el-button class="menu-button" v-if="isLooseLoggedIn" @click="toLogin()">
+            <el-button class="menu-button" v-if="
+            !isLoggedIn" @click="toLogin()">
               <el-icon>
                 <login/>
               </el-icon>
               登录
             </el-button>
-            <el-button class="menu-button" v-if="!isLooseLoggedIn">
+            <el-button class="menu-button" v-if="isLoggedIn" @click="doLogout()">
               <el-icon>
                 <logout/>
               </el-icon>
@@ -64,7 +65,9 @@ import {useRoute} from "vue-router";
 import {GithubOne, Logout, Search, Login} from "@icon-park/vue-next";
 import {computed, ref, unref} from "vue";
 import router from '@/router/index'
-import {isLooseLoggedIn} from "@/utils/auth";
+import {doLogout, isLooseLoggedIn} from "@/utils/auth";
+import {useStore} from "@/store";
+import {storeToRefs} from "pinia";
 
 const route = useRoute();
 const inputFocus = ref(false);
@@ -72,8 +75,10 @@ const keywords = ref<string>('');
 const toLogin = () => {
   router.push({name: 'loginAccount'})
 }
+const store = useStore()
+const {avaterUrl} = storeToRefs(store.data.user)
 const avatarUrl = computed(() => {
-  return 'http://s4.music.126.net/style/web2/img/default/default_avatar.jpg?param=60y60'
+  return store.data.user.avatarUrl && isLooseLoggedIn() ? `${store.data.user.avatarUrl}?param=512y512` : 'http://s4.music.126.net/style/web2/img/default/default_avatar.jpg?param=60y60'
 })
 const isLoggedIn = computed(() => {
   return isLooseLoggedIn()

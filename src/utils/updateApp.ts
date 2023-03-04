@@ -1,7 +1,7 @@
 import initLocalStorage from "@/store/initLocalStorage";
 
 const updateSetting = () => {
-    const parsedSetting = JSON.parse(localStorage.getItem('setting') as string)
+    const parsedSetting = JSON.parse(localStorage.getItem('settings') as string)
     const settings = {
         ...initLocalStorage.settings,
         ...parsedSetting

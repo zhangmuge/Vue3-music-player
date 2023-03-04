@@ -126,6 +126,75 @@ export const useStore = defineStore('store', {
                     }
                 });
             }
+        },
+        async fetchLikedSongs() {
+            if (!isLooseLoggedIn()) return;
+            if (isAccountLoggedIn()) {
+                return userLikedSongsIDs(this.data.user.userId).then(res => {
+                    const data = res.data
+                    if (data.ids) {
+                        this.updateLikedXXX('songs', data.ids)
+                    }
+                })
+            }
+        },
+        async fetchLikedAlbums() {
+            if (isAccountLoggedIn()) return;
+            return likedAlbums({limit: 2000}).then(res => {
+                const data = res.data
+                if (data.data) {
+                    this.updateLikedXXX('albums', data.data)
+                }
+            })
+        },
+        async fetchLikedArtists() {
+            if (!isAccountLoggedIn()) return;
+            return likedArtists({limit: 2000}).then(res => {
+                const data = res.data
+                if (data.data) {
+                    this.updateLikedXXX('artists', data.data)
+                }
+            })
+        },
+        async fetchPlayHistory() {
+            if (!isAccountLoggedIn()) return
+            return Promise.all([
+                userPlayHistory({uid: this.data.user?.userId, type: 0}),
+                userPlayHistory({uid: this.data.user?.userId, type: 1}),
+            ]).then(res => {
+                    const data = {}
+                    const dataType = {0: 'allData', 1: 'weekData'};
+                    if (res[0] && res[1]) {
+                        for (let i = 0; i < res.length; i++) {
+                            // @ts-ignore
+                            const songData = res[i].data[dataType[i]].map(item => {
+                                const song = item.song;
+                                song.playCount = item.playCount;
+                                return song;
+                            });
+                            // @ts-ignore
+                            data[[dataType[i]]] = songData
+                        }
+                        this.updateLikedXXX('playHistory', data)
+                    }
+                }
+            )
+        },
+        async fetchCloudDisk() {
+            if (!isAccountLoggedIn()) return
+            return cloudDisk({limit: 1000}).then(res => {
+                if (res.data.data) {
+                    this.updateLikedXXX('cloudDisk', res.data.data)
+                }
+            })
+        },
+        async fetchLikedMVs() {
+            if (!isAccountLoggedIn()) return;
+            return likedMVs({limit: 1000}).then(res => {
+                if (res.data.data) {
+                    this.updateLikedXXX('mvs', res.data.data)
+                }
+            })
         }
     }
 })

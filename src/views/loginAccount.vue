@@ -81,12 +81,14 @@ const checkQrCodeLogin = () => {
         clearInterval(qrCodeCheckInterval.value)
         qrCodeInformation.value = '登录成功,请稍等...';
         data.code = 200;
-        data.cookie = data.cookie.replace('HTTPOnly', '')
+        let cookie: string = data.cookie
+        //@ts-ignore
+        data.cookie = cookie.replaceAll(' HTTPOnly', '')
         handleLoginResponse(data)
       }
 
     })
-  })
+  }, 1000)
 }
 const handleLoginResponse = (data: any) => {
   if (!data) {
@@ -94,6 +96,7 @@ const handleLoginResponse = (data: any) => {
     return
   }
   if (data.code === 200) {
+    // console.log(data);
     setCookies(data.cookie)
     store.updateData('loginMode', 'account')
     store.fetchUserProfile().then(() => {
@@ -106,6 +109,60 @@ const handleLoginResponse = (data: any) => {
 getQrCodeKey()
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+.login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 32px;
+}
 
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 48px;
+  color: var(--color-text);
+}
+
+.section-1 {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+
+  img {
+    height: 64px;
+    margin: 20px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+}
+
+.section-2 {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.qr-code-container {
+  background-color: var(--color-primary-bg);
+  padding: 24px 24px 21px 24px;
+  border-right: 1.25rem;
+  margin-bottom: 12px;
+}
+
+.qr-code-info {
+  color: var(--color-text);
+  text-align: center;
+  margin-bottom: 28px;
+}
 </style>

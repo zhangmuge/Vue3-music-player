@@ -7,9 +7,13 @@ export function getCookie(key: string) {
 }
 
 export function doLogout() {
+    const store = useStore()
     logout();
     removeCookie('MUSIC_U');
     removeCookie('__csrf');
+    store.updateData('user', {})
+    store.updateData('loginMode', null)
+    store.updateData('likedSongPlaylistID', undefined)
 
 }
 
