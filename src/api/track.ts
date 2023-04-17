@@ -1,4 +1,4 @@
-import {useStore} from '@/store';
+import useStore from '@/store';
 import request from '@/utils/request';
 import {mapTrackPlayableStatus} from "@/utils/common";
 
@@ -40,9 +40,10 @@ export function getTrackDetail(ids: string) {
             params: {
                 ids,
             },
-        }).then((data: any) => {
-            data.songs = mapTrackPlayableStatus(data.songs, data.privileges);
-            return data;
+        }).then((data) => {
+            const res = data.data
+            res.songs = mapTrackPlayableStatus(res.songs, res.privileges);
+            return res;
         });
     };
     return fetchLatest();

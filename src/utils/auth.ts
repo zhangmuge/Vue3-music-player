@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie'
 import {logout} from '@/api/auth';
-import {useStore} from '@/store'
+import useStore from '@/store'
 
 export function getCookie(key: string) {
     return Cookies.get(key) ?? localStorage.getItem(`cookie-${key}`);

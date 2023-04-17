@@ -1,55 +1,55 @@
 <template>
-  <div class="explore-page">
-    <h1>发现</h1>
-    <div class="buttons">
-      <div v-for="category in settings.enabledPlaylistCategories"
-           :key="category"
-           class="button"
-           :class="{active:category===activeCategory&&!showCatOptions}"
-           @click="goToCategory(category)"
-      >
-        {{ category }}
-      </div>
-      <div class="button more" :class="{active:showCatOptions}"
-           @click="showCatOptions=!showCatOptions">
-        <More/>
-      </div>
-    </div>
-
-    <div v-show="showCatOptions" class="panel">
-      <div v-for="bigCat in allBigCats" :key="bigCat" class="big-cat">
-        <div class="name">{{ bigCat }}</div>
-        <div class="cats">
-          <div v-for="cat in getCatsByBigCat(bigCat)"
-               :key="cat.name"
-               class="cat"
-               :class="{active:settings.enabledPlaylistCategories.includes(cat.name)}"
-               @click="toggleCat(cat.name)">
-            <span>{{ cat.name }}</span>
-          </div>
+    <div class="explore-page">
+        <h1>发现</h1>
+        <div class="buttons">
+            <div v-for="category in settings.enabledPlaylistCategories"
+                 :key="category"
+                 class="button"
+                 :class="{active:category===activeCategory&&!showCatOptions}"
+                 @click="goToCategory(category)"
+            >
+                {{ category }}
+            </div>
+            <div class="button more" :class="{active:showCatOptions}"
+                 @click="showCatOptions=!showCatOptions">
+                <More/>
+            </div>
         </div>
-      </div>
+
+        <div v-show="showCatOptions" class="panel">
+            <div v-for="bigCat in allBigCats" :key="bigCat" class="big-cat">
+                <div class="name">{{ bigCat }}</div>
+                <div class="cats">
+                    <div v-for="cat in getCatsByBigCat(bigCat)"
+                         :key="cat.name"
+                         class="cat"
+                         :class="{active:settings.enabledPlaylistCategories.includes(cat.name)}"
+                         @click="toggleCat(cat.name)">
+                        <span>{{ cat.name }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="playlists">
+            <CoverRow type="playlist" :items="playlists" :sub-text="subText"
+                      :show-play-count="activeCategory!=='排行榜'"
+                      :show-play-button="true"
+                      :image-size="activeCategory!=='排行榜'?512:1024"/>
+        </div>
+        <div v-show="['推荐歌单','排行榜'].includes(activeCategory)===false"
+             class="load-more">
+            <ButtonTwoTone
+                    v-show="showLoadMoreButton &&hasMore"
+                    color="grey"
+                    :loading="loadingMore"
+                    @click="getPlaylist">加载更多
+            </ButtonTwoTone>
+        </div>
     </div>
-    <div class="playlists">
-      <CoverRow type="playlist" :items="playlists" :sub-text="subText"
-                :show-play-count="activeCategory!=='排行榜'"
-                :show-play-button="true"
-                :image-size="activeCategory!=='排行榜'?512:1024"/>
-    </div>
-    <div v-show="['推荐歌单','排行榜'].includes(activeCategory)===false"
-         class="load-more">
-      <ButtonTwoTone
-          v-show="showLoadMoreButton &&hasMore"
-          color="grey"
-          :loading="loadingMore"
-          @click="getPlaylist">加载更多
-      </ButtonTwoTone>
-    </div>
-  </div>
 </template>
 
 <script lang="ts" setup>
-import {useStore} from "@/store";
+import useStore from "@/store";
 import {More} from "@icon-park/vue-next";
 import {computed, onActivated, ref} from "vue";
 import {playlistCategories} from "@/utils/staticData";
@@ -61,6 +61,7 @@ import {getRecommendPlayList} from "@/utils/playlist";
 import {highQualityPlaylist, toplists, topPlaylist} from "@/api/playlist";
 import ButtonTwoTone from "@/components/ButtonTwoTone.vue";
 import router from "@/router";
+
 const store = useStore()
 const settings = computed(() => store.settings)
 
@@ -74,95 +75,95 @@ const hasMore = ref(true)
 const showLoadMoreButton = ref(false)
 const route = useRoute()
 const loadData = () => {
-  setTimeout(() => {
-    if (!show.value)
-      NProcess.start()
-  }, 1000);
-  activeCategory.value = route.query.category === null || undefined ? '全部' : route.query.category as string
-  getPlaylist();
+    setTimeout(() => {
+        if (!show.value)
+            NProcess.start()
+    }, 1000);
+    activeCategory.value = route.query.category === null || undefined ? '全部' : route.query.category as string
+    getPlaylist();
 }
 const getPlaylist = () => {
-  loadingMore.value = true
-  if (activeCategory.value === '推荐歌单') {
-    return getRecomPlayList()
-  }
-  if (activeCategory.value === '精品歌单') {
-    return getHighQualityPlaylist();
-  }
-  if (activeCategory.value === '排行榜') {
-    return getTopLists();
-  }
-  return getTopPlayList();
+    loadingMore.value = true
+    if (activeCategory.value === '推荐歌单') {
+        return getRecomPlayList()
+    }
+    if (activeCategory.value === '精品歌单') {
+        return getHighQualityPlaylist();
+    }
+    if (activeCategory.value === '排行榜') {
+        return getTopLists();
+    }
+    return getTopPlayList();
 }
 
 const getHighQualityPlaylist = () => {
-  let playlist = playlists;
-  let before =
-      playlist.value.length !== 0 ? playlist.value[playlist.value.length - 1].updateTime : 0;
-  highQualityPlaylist({limit: 50, before}).then(data => {
-    const res = data.data
-    updatePlaylist(res.playlists);
-    hasMore.value = res.more;
-  });
+    let playlist = playlists;
+    let before =
+        playlist.value.length !== 0 ? playlist.value[playlist.value.length - 1].updateTime : 0;
+    highQualityPlaylist({limit: 50, before}).then(data => {
+        const res = data.data
+        updatePlaylist(res.playlists);
+        hasMore.value = res.more;
+    });
 }
 const getTopLists = () => {
-  toplists().then(data => {
-    const res = data.data
-    playlists.value = [];
-    updatePlaylist(res.list);
-  });
+    toplists().then(data => {
+        const res = data.data
+        playlists.value = [];
+        updatePlaylist(res.list);
+    });
 }
 const getTopPlayList = () => {
-  topPlaylist({
-    order: 'hot',
-    cat: activeCategory.value,
-    offset: playlists.value.length,
-  }).then(data => {
-    updatePlaylist(data.data.playlists);
-    hasMore.value = data.data.more;
-  });
+    topPlaylist({
+        order: 'hot',
+        cat: activeCategory.value,
+        offset: playlists.value.length,
+    }).then(data => {
+        updatePlaylist(data.data.playlists);
+        hasMore.value = data.data.more;
+    });
 }
 const getRecomPlayList = () => {
-  getRecommendPlayList(100, true).then((res: any) => {
-    playlists.value = []
-    updatePlaylist(res.data)
-  })
+    getRecommendPlayList(100, true).then((res: any) => {
+        playlists.value = []
+        updatePlaylist(res)
+    })
 }
 const updatePlaylist = (playlist: []) => {
-  playlists.value.push(...playlist)
-  loadingMore.value = false
-  showLoadMoreButton.value = true
-  NProcess.done()
-  show.value = true
+    playlists.value.push(...playlist)
+    loadingMore.value = false
+    showLoadMoreButton.value = true
+    NProcess.done()
+    show.value = true
 }
 const subText = computed(() => {
-  if (activeCategory.value === '排行榜')
-    return 'updateFrequency'
-  if (activeCategory.value === '推荐歌单')
-    return 'copywriter'
-  return 'none';
+    if (activeCategory.value === '排行榜')
+        return 'updateFrequency'
+    if (activeCategory.value === '推荐歌单')
+        return 'copywriter'
+    return 'none';
 })
 const goToCategory = (Category: string) => {
-  showCatOptions.value = false
-  router.push({name: 'explore', query: {category: Category}}).catch(err => {
-  })
+    showCatOptions.value = false
+    router.push({name: 'explore', query: {category: Category}}).catch(err => {
+    })
 }
 const getCatsByBigCat = (name: string) => {
-  return playlistCategories.filter((c: any) => c.bigCat === name)
+    return playlistCategories.filter((c: any) => c.bigCat === name)
 }
 const toggleCat = (name: string) => {
-  store.togglePlaylistCategory(name);
+    store.togglePlaylistCategory(name);
 }
 onActivated(() => {
-  loadData()
+    loadData()
 })
 onBeforeRouteUpdate((to, from, next) => {
-  showLoadMoreButton.value = false
-  hasMore.value = true
-  playlists.value = []
-  activeCategory.value = to.query.category as string
-  getPlaylist()
-  next()
+    showLoadMoreButton.value = false
+    hasMore.value = true
+    playlists.value = []
+    activeCategory.value = to.query.category as string
+    getPlaylist()
+    next()
 })
 </script>
 

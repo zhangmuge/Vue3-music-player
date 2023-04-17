@@ -1,62 +1,64 @@
 <template>
-  <div>
-    <nav>
-      <div class="navigation-buttons">
-        <el-button text :icon="ArrowLeftBold" round size="large"></el-button>
-        <el-button text :icon="ArrowRightBold" round size="large"></el-button>
-      </div>
-      <div class="navigation-links">
-        <router-link to="/" :class="{active:route.name==='home'}">首页</router-link>
-        <router-link to="/explore" :class="{active:route.name==='explore'}">发现</router-link>
-        <router-link to="/library" :class="{active:route.name==='library'}">音乐库</router-link>
-      </div>
-      <div class="right-part">
-        <div class="search-box">
-          <div class="container" :class="{active:inputFocus}">
-            <div class="input">
-              <el-input :clearable="true" v-model="keywords" ref="searchInput" :placeholder="inputFocus?'':'搜索'"
-                        @keydown.enter="doSearch" @focus="inputFocus=true" @blur="inputFocus=false" type="search"
-              >
-                <template #prefix>
-                  <el-icon size="18px">
-                    <search/>
-                  </el-icon>
-                </template>
-              </el-input>
+    <div>
+        <nav>
+            <div class="navigation-buttons">
+                <el-button text :icon="ArrowLeftBold" round size="large" @click="go('back')"></el-button>
+                <el-button text :icon="ArrowRightBold" round size="large" @click="go('forward')"></el-button>
             </div>
-          </div>
-        </div>
-        <el-popover popper-class="popper">
-          <template #reference>
-            <el-avatar :src="avatarUrl" ref="avatar" shape="circle" :size="35"/>
-          </template>
-          <template #default>
-            <el-button class="menu-button" v-if="
+            <div class="navigation-links">
+                <router-link to="/" :class="{active:route.name==='home'}">首页</router-link>
+                <router-link to="/explore" :class="{active:route.name==='explore'}">发现</router-link>
+                <router-link to="/library" :class="{active:route.name==='library'}">音乐库</router-link>
+            </div>
+            <div class="right-part">
+                <div class="search-box">
+                    <div class="container" :class="{active:inputFocus}">
+                        <div class="input">
+                            <el-input :clearable="true" v-model="keywords" ref="searchInput"
+                                      :placeholder="inputFocus?'':'搜索'"
+                                      @keydown.enter="doSearch" @focus="inputFocus=true" @blur="inputFocus=false"
+                                      type="search"
+                            >
+                                <template #prefix>
+                                    <el-icon size="18px">
+                                        <search/>
+                                    </el-icon>
+                                </template>
+                            </el-input>
+                        </div>
+                    </div>
+                </div>
+                <el-popover popper-class="popper">
+                    <template #reference>
+                        <el-avatar :src="avatarUrl" ref="avatar" shape="circle" :size="35"/>
+                    </template>
+                    <template #default>
+                        <el-button class="menu-button" v-if="
             !isLoggedIn" @click="toLogin()">
-              <el-icon>
-                <login/>
-              </el-icon>
-              登录
-            </el-button>
-            <el-button class="menu-button" v-if="isLoggedIn" @click="doLogout()">
-              <el-icon>
-                <logout/>
-              </el-icon>
-              退出登录
-            </el-button>
-            <br>
-            <el-button class="menu-button">
-              <el-icon>
-                <github-one/>
-              </el-icon>
-              github
-            </el-button>
-          </template>
-        </el-popover>
-      </div>
-    </nav>
+                            <el-icon>
+                                <login/>
+                            </el-icon>
+                            登录
+                        </el-button>
+                        <el-button class="menu-button" v-if="isLoggedIn" @click="doLogout()">
+                            <el-icon>
+                                <logout/>
+                            </el-icon>
+                            退出登录
+                        </el-button>
+                        <br>
+                        <el-button class="menu-button">
+                            <el-icon>
+                                <github-one/>
+                            </el-icon>
+                            github
+                        </el-button>
+                    </template>
+                </el-popover>
+            </div>
+        </nav>
 
-  </div>
+    </div>
 </template>
 
 <script lang="ts" setup>
@@ -66,35 +68,41 @@ import {GithubOne, Logout, Search, Login} from "@icon-park/vue-next";
 import {computed, ref, unref} from "vue";
 import router from '@/router/index'
 import {doLogout, isLooseLoggedIn} from "@/utils/auth";
-import {useStore} from "@/store";
+import useStore from "@/store";
 import {storeToRefs} from "pinia";
 
 const route = useRoute();
 const inputFocus = ref(false);
 const keywords = ref<string>('');
 const toLogin = () => {
-  router.push({name: 'loginAccount'})
+    router.push({name: 'loginAccount'})
 }
 const store = useStore()
 const {avaterUrl} = storeToRefs(store.data.user)
 const avatarUrl = computed(() => {
-  return store.data.user.avatarUrl && isLooseLoggedIn() ? `${store.data.user.avatarUrl}?param=512y512` : 'http://s4.music.126.net/style/web2/img/default/default_avatar.jpg?param=60y60'
+    return store.data.user.avatarUrl && isLooseLoggedIn() ? `${store.data.user.avatarUrl}?param=512y512` : 'http://s4.music.126.net/style/web2/img/default/default_avatar.jpg?param=60y60'
 })
 const isLoggedIn = computed(() => {
-  return isLooseLoggedIn()
+    return isLooseLoggedIn()
 })
 const avatar = ref();
 const doSearch = () => {
-  if (keywords.value === '')
-    return;
-  if (route.name === 'search' && route.params.keywords === keywords.value)
-    return;
-  router.push({
-    name: 'search',
-    params: {
-      keywords: keywords.value
-    }
-  })
+    if (keywords.value === '')
+        return;
+    if (route.name === 'search' && route.params.keywords === keywords.value)
+        return;
+    router.push({
+        name: 'search',
+        params: {
+            keywords: keywords.value
+        }
+    })
+}
+const go = (where: string) => {
+    if (where === 'back')
+        router.go(-1)
+    else
+        router.go(1)
 }
 </script>
 

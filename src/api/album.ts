@@ -15,10 +15,11 @@ export function getAlbum(id:number) {
             params: {
                 id,
             },
-        }).then((data:any) => {
+        }).then((data) => {
+            const res=data.data
             // cacheAlbum(id, data);
-            data.songs = mapTrackPlayableStatus(data.songs);
-            return data;
+            res.songs = mapTrackPlayableStatus(res.songs);
+            return res;
         });
     };
      return fetchLatest();

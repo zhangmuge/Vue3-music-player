@@ -27,7 +27,7 @@ export function recommendPlaylist(params: recommendPlaylist) {
  * @param {Object} params
  * @param {number=} params.limit
  */
-export function dailyRecommendPlaylist(params: {
+export function dailyRecommendPlaylist(params?: {
     limit?: number
 }) {
     return request({
@@ -50,7 +50,7 @@ export function dailyRecommendPlaylist(params: {
  * @param {number} id
  * @param {boolean=} noCache
  */
-export function getPlaylistDetail(id: number) {
+export function getPlaylistDetail(id: number, noCache = false) {
     const timestamp = 0
     const params = {
         id, timestamp
@@ -61,13 +61,14 @@ export function getPlaylistDetail(id: number) {
         method: 'get',
         params,
     }).then((data: any) => {
-        if (data.playlist) {
-            data.playlist.tracks = mapTrackPlayableStatus(
-                data.playlist.tracks,
-                data.privileges || []
+        const res = data.data
+        if (res.playlist) {
+            res.playlist.tracks = mapTrackPlayableStatus(
+                res.playlist.tracks,
+                res.privileges || []
             );
         }
-        return data;
+        return res;
     });
 }
 

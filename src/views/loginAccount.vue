@@ -24,10 +24,8 @@ import {ref} from "vue";
 import {loginQrCodeCheck, loginQrCodeKey} from "@/api/auth";
 //@ts-ignore
 import QRCode from 'qrcode'
-//@ts-ignore
-import NProgress from 'NProgress'
 import {setCookies} from "@/utils/auth";
-import {useStore} from "@/store";
+import useStore from "@/store";
 import router from "@/router";
 
 const qrCodeKey = ref('')
@@ -58,7 +56,6 @@ const getQrCodeKey = () => {
       }).catch((err: Error) => {
         console.error(err)
       }).finally(() => {
-        NProgress.done()
       })
     }
     checkQrCodeLogin()

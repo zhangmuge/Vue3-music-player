@@ -2,7 +2,7 @@ import {isAccountLoggedIn} from './auth';
 import {refreshCookie} from '@/api/auth';
 import {dailySignin} from '@/api/user';
 import dayjs from 'dayjs';
-import {useStore} from "@/store";
+import useStore from "@/store";
 
 export function isTrackPlayable(track: any) {
     const store = useStore()

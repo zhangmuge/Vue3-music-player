@@ -1,138 +1,143 @@
 <template>
-  <div v-show="show" ref="library">
-    <h1>
-      <img
-          class="avatar"
-          :src="resizeImage(data.user.avatarUrl)"
-          loading="lazy"/>
-      {{ data.user.nickname }}{{ '的音乐库' }}
-    </h1>
-    <div class="section-one">
-      <div class="liked-songs" @click="goToLikedSongsList">
-        <div class="top">
-          <p>
-            <span v-for="(line,index) in pickedLyric"
-                  v-show="line!==''"
-                  :key="`${line}${index}`">
-              {{ line }}
-              <br/>
-            </span>
-          </p>
-        </div>
-        <div class="bottom">
-          <div class="titles">
-            <div class="title">
-              我喜欢的音乐
+    <div v-show="show" ref="library">
+        <h1>
+            <img
+                    class="avatar"
+                    :src="resizeImage(data.user.avatarUrl)"
+                    loading="lazy"/>
+            {{ data.user.nickname }}{{ '的音乐库' }}
+        </h1>
+        <div class="section-one">
+            <div class="liked-songs" @click="goToLikedSongsList">
+                <!--        <div class="top">-->
+                <!--          <p>-->
+                <!--&lt;!&ndash;            <span v-for="(line,index) in pickedLyric"&ndash;&gt;-->
+                <!--            &lt;!&ndash;                  v-show="line!==''"&ndash;&gt;-->
+                <!--            &lt;!&ndash;                  :key="`${line}${index}`">&ndash;&gt;-->
+                <!--            &lt;!&ndash;              {{ line }}&ndash;&gt;-->
+                <!--            &lt;!&ndash;              <br/>&ndash;&gt;-->
+                <!--            &lt;!&ndash;            </span>&ndash;&gt;-->
+                <!--          </p>-->
+                <!--        </div>-->
+                <div class="bottom">
+                    <div class="titles">
+                        <div class="title">
+                            我喜欢的音乐
+                        </div>
+                        <div class="sub-title">
+                            {{ liked.songs.length }}{{ " 首歌" }}
+                        </div>
+                    </div>
+                    <button @click.stop="openPlayModeTabMenu">
+                        <el-icon size="28">
+                            <PlayOne/>
+                        </el-icon>
+                    </button>
+                </div>
             </div>
-            <div class="sub-title">
-              {{ liked.songs.length }}{{ " 首歌" }}
+            <div class="songs">
+                <TrackList
+                        :id="liked.playlists.length>0?liked.playlists[0].id:0"
+                        :tracks="liked.songsWithDetails.songs"
+                        :column-number="3"
+                        type="tracklist"
+                        dbclick-track-func="playPlaylistByID"/>
             </div>
-          </div>
-          <button @click.stop="openPlayModeTabMenu">
-            <el-icon size="28">
-              <PlayOne></PlayOne>
-            </el-icon>
-          </button>
         </div>
-      </div>
-      <div class="songs">
-
-      </div>
     </div>
-  </div>
 </template>
 
 <script setup lang="ts">
 import {PlayOne} from "@icon-park/vue-next";
-import {computed, ref} from "vue";
-import {useStore} from "@/store";
+import {computed, nextTick, ref} from "vue";
+import useStore from "@/store";
 import {randomNum} from "@/utils/common";
-//@ts-ignore
-import NProgress from "nprogress"
 import {getLyric} from "@/api/track";
 import router from "@/router/index"
 import {storeToRefs} from "pinia";
+import TrackList from "@/components/TrackList.vue";
 
 const store = useStore()
 const show = ref(true)
 const data = computed(() => {
-  return store.data
+    return store.data
 })
 // console.log(data.value)
 const liked = computed(() => {
-  return store.liked
+    return store.liked
 })
 const goToLikedSongsList = () => {
-  router.push({path: '/library/liked-songs'})
+    router.push({path: '/library/liked-songs'})
 }
 const resizeImage = (imgUrl: string, size = 512) => {
-  if (!imgUrl) return '';
-  let httpsImgUrl = imgUrl;
-  if (imgUrl.slice(0, 5) !== 'https') {
-    httpsImgUrl = 'https' + imgUrl.slice(4);
-  }
-  return `${httpsImgUrl}?param=${size}y${size}`;
+    if (!imgUrl) return '';
+    let httpsImgUrl = imgUrl;
+    if (imgUrl.slice(0, 5) !== 'https') {
+        httpsImgUrl = 'https' + imgUrl.slice(4);
+    }
+    return `${httpsImgUrl}?param=${size}y${size}`;
 }
 const extractLyricPart = (rawLyric: string) => {
-  //@ts-ignore
-  return rawLyric.split(']').pop().trim();
+    //@ts-ignore
+    return rawLyric.split(']').pop().trim();
 }
 const lyric = ref('')
 const pickedLyric = computed(() => {
-  const temp_lyric = lyric.value;
+    const temp_lyric = lyric.value;
 
-  // Returns [] if we got no lyrics.
-  if (!temp_lyric) return [];
+    // Returns [] if we got no lyrics.
+    if (!temp_lyric) return [];
 
-  const lyricLine = temp_lyric
-      .split('\n')
-      .filter((line: string) => !line.includes('作词') && !line.includes('作曲'));
+    const lyricLine = temp_lyric
+        .split('\n')
+        .filter((line: string) => !line.includes('作词') && !line.includes('作曲'));
 
-  // Pick 3 or fewer lyrics based on the lyric lines.
-  const lyricsToPick = Math.min(lyricLine.length, 3);
+    // Pick 3 or fewer lyrics based on the lyric lines.
+    const lyricsToPick = Math.min(lyricLine.length, 3);
 
-  // The upperBound of the lyric line to pick
-  const randomUpperBound = lyricLine.length - lyricsToPick;
-  const startLyricLineIndex = randomNum(0, randomUpperBound - 1);
+    // The upperBound of the lyric line to pick
+    const randomUpperBound = lyricLine.length - lyricsToPick;
+    const startLyricLineIndex = randomNum(0, randomUpperBound - 1);
 
-  // Pick lyric lines to render.
-  return lyricLine
-      .slice(startLyricLineIndex, startLyricLineIndex + lyricsToPick)
-      .map(extractLyricPart);
+    // Pick lyric lines to render.
+    return lyricLine
+        .slice(startLyricLineIndex, startLyricLineIndex + lyricsToPick)
+        .map(extractLyricPart);
 })
 const getRandomLyric = () => {
-  if (store.liked.songs.length === 0)
-    return
-  getLyric(store.liked.songs[randomNum(0, store.liked.songs.length - 1)]).then(data => {
-    const res = data.data
-    if (res.lrc !== undefined) {
-      const isInstrumental = res.lrc.lyric.split('\n').filter((l: string) => l.includes('纯音乐，请欣赏'))
-      if (isInstrumental.length === 0) {
-        lyric.value = res.lrc.lyric
-      }
-    }
-  })
+    if (store.liked.songs.length === 0)
+        return
+    getLyric(store.liked.songs[randomNum(0, store.liked.songs.length - 1)]).then(data => {
+        const res = data.data
+        if (res.lrc !== undefined) {
+            const isInstrumental = res.lrc.lyric.split('\n').filter((l: string) => l.includes('纯音乐，请欣赏'))
+            if (isInstrumental.length === 0) {
+                lyric.value = res.lrc.lyric
+            }
+        }
+    })
 }
 const loadData = () => {
-  if (store.liked.songsWithDetails.length > 0) {
-    NProgress.done()
-    show.value = true
-    store.fetchLikedSongsWithDetails()
-    getRandomLyric()
-  } else {
-    store.fetchLikedSongsWithDetails().then(() => {
-      NProgress.done()
-      show.value = true
-      getRandomLyric()
+    if (store.liked.songsWithDetails.length > 0) {
+        show.value = true
+        store.fetchLikedSongsWithDetails()
+        getRandomLyric()
+    } else {
+        store.fetchLikedSongsWithDetails().then(() => {
+            show.value = true
+            getRandomLyric()
+        })
+    }
+    nextTick(() => {
+        console.log(liked)
     })
-  }
-  store.fetchLikedPlaylist()
-  store.fetchLikedSongs()
-  store.fetchLikedAlbums()
-  store.fetchPlayHistory()
-  store.fetchLikedArtists()
-  store.fetchCloudDisk()
-  store.fetchLikedMVs()
+    store.fetchLikedPlaylist()
+    store.fetchLikedSongs()
+    store.fetchLikedAlbums()
+    store.fetchPlayHistory()
+    store.fetchLikedArtists()
+    store.fetchCloudDisk()
+    store.fetchLikedMVs()
 }
 loadData()
 
@@ -155,7 +160,6 @@ h1 {
 }
 
 .section-one {
-  display: flex;
   margin-top: 24px;
 
   .songs {
@@ -221,5 +225,9 @@ h1 {
       }
     }
   }
+}
+
+.section-one{
+  user-select: none;
 }
 </style>

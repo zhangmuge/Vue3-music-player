@@ -59,12 +59,8 @@ const recommendArtists = ref<{ items: any[], indexs: any[] }>({items: [], indexs
 const DailyTracksCardRef = ref();
 const topList = ref<{ items: any[], ids: any[] }>({items: [], ids: [19723756, 180106, 60198, 3812895, 60131]})
 onActivated(() => {
-  setTimeout(() => {
-    if (!show.value) NProgress.start()
-  }, 1000);
   getRecommendPlayList(10, false).then(res => {
-    recommendPlayList.value = res.data.result
-    NProgress.done()
+    recommendPlayList.value = res
     show.value = true
   })
   toplistOfArtists().then((res: any) => {

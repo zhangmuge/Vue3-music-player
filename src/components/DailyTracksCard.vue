@@ -23,7 +23,7 @@
 import sample from 'lodash/sample';
 import {PlayOne} from "@icon-park/vue-next";
 import {computed, ref} from "vue";
-import {useStore} from "@/store";
+import useStore from "@/store";
 import {isAccountLoggedIn} from "@/utils/auth";
 import {dailyRecommendTracks} from "@/api/playlist";
 

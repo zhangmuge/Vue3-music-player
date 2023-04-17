@@ -1,8 +1,5 @@
 <template>
   <button :style="buttonStyle" :class="color">
-    <el-icon v-if="iconClass!==null"
-             :style="{marginRight:iconButton?'0px':'8px'}"
-    />
     <slot></slot>
   </button>
 </template>

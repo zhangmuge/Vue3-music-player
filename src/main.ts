@@ -10,8 +10,6 @@ import 'element-plus/theme-chalk/dark/css-vars.css'
 import '@icon-park/vue-next/styles/index.css';
 import 'nprogress/nprogress.css'
 import {storePlugins} from '@/store/plugins/localStorage'
-// @ts-ignore
-import NProgress from 'nprogress'
 
 const app = createApp(App)
 const pinia = createPinia();
@@ -21,7 +19,6 @@ app.use(ElementPlus)
 app.use(router)
 
 app.mount('#app')
-NProgress.configure({showSpinner: false, trickleSpeed: 100});
 // @ts-ignore
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)

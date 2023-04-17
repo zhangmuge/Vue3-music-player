@@ -14,16 +14,27 @@ import {
     cloudDisk,
     userAccount,
 } from '@/api/user';
-import {result} from "lodash";
+import player from '@/utils/player'
+let Player = new player();
+Player = new Proxy(Player, {
+    set(target, prop, val) {
+        // console.log({ prop, val });
+        // @ts-ignore
+        target[prop] = val;
+        if (prop === '_howler') return true;
+        target.saveSelfToLocalStorage();
+        return true;
+    },
+});
 
-export const useStore = defineStore('store', {
-    state: () => State,
+const useStore = defineStore('store', {
+    state: () => {State.player= Player; return State},
     actions: {
         updateLikedXXX(name: string, data: any) {
             // @ts-ignore
             this.liked[name] = data;
             if (name === 'songs') {
-                this.player.sendSelfToIpcMain()
+                // this.player.sendSelfToIpcMain()
             }
         },
         async showToast(text: string) {
@@ -69,8 +80,9 @@ export const useStore = defineStore('store', {
             )
         },
         async fetchLikedSongsWithDetails() {
-            return getPlaylistDetail(this.data.likedSongPlaylistID).then(
+            return getPlaylistDetail(this.data.likedSongPlaylistID, true).then(
                 (result: any) => {
+                    console.log(result);
                     if (result.playlist?.trackIds?.length === 0) {
                         return new Promise((resolve: any) => {
                             resolve()
@@ -78,7 +90,7 @@ export const useStore = defineStore('store', {
                     }
                     return getTrackDetail(result.playlist.trackIds.slice(0, 12).map((t: any) => t.id).join(',')).then(
                         (result: any) => {
-                            this.updateLikedXXX('songsWithDetails', result.songs)
+                            this.updateLikedXXX('songsWithDetails', result)
                         }
                     )
                 }
@@ -195,6 +207,11 @@ export const useStore = defineStore('store', {
                     this.updateLikedXXX('mvs', res.data.data)
                 }
             })
+        },
+        updateTitle(title: string) {
+            this.title = title
         }
     }
 })
+
+export default useStore;
